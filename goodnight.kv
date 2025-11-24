@@ -1,0 +1,139 @@
+#:import MDTextField kivymd.uix.textfield.MDTextField
+#:import MDRectangleFlatButton kivymd.uix.button.MDRectangleFlatButton
+#:import MDFlatButton kivymd.uix.button.MDFlatButton
+#:import MDIconButton kivymd.uix.button.MDIconButton
+#:import MDLabel kivymd.uix.label.MDLabel
+#:import ScrollView kivy.uix.scrollview.ScrollView
+#:import MDList kivymd.uix.list.MDList
+
+ScreenManager:
+    MainScreen:
+        name: "main"
+    CreateBillScreen:
+        name: "create_bill"
+    BillScreen:
+        name: "bill"
+
+
+<MainScreen>:
+    FloatLayout:
+        MDLabel:
+            text: "Goodnight"
+            halign: "center"
+            font_style: "H4"
+            pos_hint: {"center_y": .92}
+
+        ScrollView:
+            size_hint: (0.9, 0.68)
+            pos_hint: {"center_x": .5, "center_y": .48}
+            MDList:
+                id: bills_list
+
+        MDRectangleFlatButton:
+            text: "Создать счёт"
+            pos_hint: {"center_x": .5, "center_y": .08}
+            on_release:
+                app.root.current = "create_bill"
+
+
+<CreateBillScreen>:
+    FloatLayout:
+        MDLabel:
+            text: "Создание счёта"
+            halign: "center"
+            font_style: "H5"
+            pos_hint: {"center_y": .9}
+
+        MDTextField:
+            id: bill_title
+            hint_text: "Название (например, Бар 21)"
+            pos_hint: {"center_x": .5, "center_y": .6}
+            size_hint_x: 0.9
+            required: False
+
+        MDRectangleFlatButton:
+            text: "Назад"
+            pos_hint: {"center_x": .25, "center_y": .12}
+            on_release:
+                app.go_main()
+
+        MDRectangleFlatButton:
+            text: "Создать"
+            pos_hint: {"center_x": .75, "center_y": .12}
+            on_release:
+                app.create_bill_from_ui()
+
+
+<BillScreen>:
+    FloatLayout:
+        MDLabel:
+            id: bill_title_label
+            text: "Счёт — детали (пока пусто)"
+            halign: "center"
+            font_style: "H5"
+            pos_hint: {"center_y": .92}
+
+        ScrollView:
+            size_hint: (0.9, 0.65)
+            pos_hint: {"center_x": .5, "center_y": .55}
+            MDList:
+                id: items_list
+
+        MDRectangleFlatButton:
+            text: "Добавить позицию"
+            pos_hint: {"center_x": .5, "center_y": .18}
+            on_release:
+                app.root.current = "add_item"
+                app.root.get_screen("add_item").ids.bill_id_label.text = root.bill_id
+
+
+        MDRectangleFlatButton:
+            text: "Назад"
+            pos_hint: {"center_x": .5, "center_y": .1}
+            on_release:
+                app.go_main()
+
+<AddItemScreen>:
+    FloatLayout:
+
+        MDLabel:
+            text: "Новая позиция"
+            halign: "center"
+            font_style: "H5"
+            pos_hint: {"center_y": .92}
+
+        MDLabel:
+            id: bill_id_label
+            text: ""
+            opacity: 0   # не показываем, просто храним id счета
+
+        MDTextField:
+            id: item_title
+            hint_text: "Название позиции"
+            pos_hint: {"center_x": .5, "center_y": .7}
+            size_hint_x: 0.9
+
+        MDTextField:
+            id: item_price
+            hint_text: "Цена"
+            input_filter: "float"
+            pos_hint: {"center_x": .5, "center_y": .55}
+            size_hint_x: 0.9
+
+        MDTextField:
+            id: item_person
+            hint_text: "Кто это заказал"
+            pos_hint: {"center_x": .5, "center_y": .4}
+            size_hint_x: 0.9
+
+        MDRectangleFlatButton:
+            text: "Сохранить"
+            pos_hint: {"center_x": .7, "center_y": .15}
+            on_release:
+                app.save_new_item()
+
+        MDRectangleFlatButton:
+            text: "Назад"
+            pos_hint: {"center_x": .3, "center_y": .15}
+            on_release:
+                app.open_bill({"id": bill_id_label.text})
